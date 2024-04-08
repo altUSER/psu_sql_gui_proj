@@ -36,6 +36,11 @@ class Master():
         
         return mstr_arr
     
+    def delete(self):
+        cursor.execute(f'DELETE FROM masters WHERE id={self.id}')
+        conn.commit()
+        return self
+    
     def getClients(self):
         from .clients import Client
 

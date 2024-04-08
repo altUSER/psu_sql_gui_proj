@@ -45,7 +45,11 @@ class Service():
             return cl_arr
         else:
             return None
-
+    
+    def delete(self):
+        cursor.execute(f'DELETE FROM types_of_services WHERE id={self.id}')
+        conn.commit()
+        return self
     
     def write(self):
         if self.__inDatabase():

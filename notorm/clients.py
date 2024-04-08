@@ -49,6 +49,11 @@ class Client():
             conn.commit()
             return self
     
+    def delete(self):
+        cursor.execute(f'DELETE FROM clients WHERE id={self.id}')
+        conn.commit()
+        return self
+    
 
     def __getMaxId(self):
         return cursor.execute('SELECT MAX(id) FROM clients;').fetchone()[0]
