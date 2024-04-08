@@ -1,6 +1,7 @@
 import notorm
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import showinfo, showerror
 
 open_windows_flag = 0
 
@@ -28,14 +29,20 @@ notebook.add(f_services, text='Услуги')
 
 # --Additionals windows--
 
-def add_client():
+# Add client
+def new_client_window():
     mst_name_list = []
+    mst_name_dict = {}
     for master in notorm.Master().getAll():
         mst_name_list.append(master.name)
+        mst_name_dict.update({master.name: master.id})
+    
 
     srv_name_list = []
+    srv_name_dict = {}
     for service in notorm.Service().getAll():
         srv_name_list.append(service.service_name)
+        srv_name_dict.update({service.service_name: service.id})
 
     w_add_cl = Toplevel(root)
     w_add_cl.title('Новый клиент')
@@ -51,33 +58,54 @@ def add_client():
     e_phone = ttk.Entry(w_add_cl)
     e_phone.grid(row=1, column=1, pady=4, padx=2, sticky='ew')
 
+
+    mst_var = StringVar()
+
     l_master = ttk.Label(w_add_cl, text='Мастер')
     l_master.grid(row=2, column=0, pady=4, padx=2)
-    cb_master = ttk.Combobox(w_add_cl, values=mst_name_list)
+    cb_master = ttk.Combobox(w_add_cl, textvariable=mst_var, values=mst_name_list)
     cb_master.grid(row=2, column=1, pady=4, padx=2, sticky='ew')
+
+
+    srv_val = StringVar()
 
     l_service = ttk.Label(w_add_cl, text='Услуга')
     l_service.grid(row=3, column=0, pady=4, padx=2)
-    cb_service = ttk.Combobox(w_add_cl, values=srv_name_list)
+    cb_service = ttk.Combobox(w_add_cl, textvariable=srv_val, values=srv_name_list)
     cb_service.grid(row=3, column=1, pady=4, padx=2, sticky='ew')
 
     button_frame = ttk.Frame(w_add_cl)
 
-    b_exit = ttk.Button(button_frame, text='Закрыть')
+    b_exit = ttk.Button(button_frame, text='Закрыть', command=w_add_cl.destroy)
     b_exit.grid(row=0, column=0, pady=4, padx=6)
 
-    b_apply = ttk.Button(button_frame, text='Добавить')
+    b_apply = ttk.Button(button_frame, text='Добавить', command=lambda: add_client(e_name.get(), e_phone.get(), mst_var.get(), srv_val.get()))
     b_apply.grid(row=0, column=1, pady=4, padx=6)
 
     button_frame.grid(row=4, column=0, columnspan=2)
-    
+
+    def add_client(name, phone_number, master_name, service_name):
+        try:
+            newUser = notorm.Client(
+                    name=name,
+                    phone_number=phone_number,
+                    master=notorm.Master().getById(mst_name_dict[master_name]),
+                    service=notorm.Service().getById(srv_name_dict[service_name])
+                    )
+            newUser.write()
+
+            showinfo('Успешно', f'Пользователь {name} добавлен.')
+            w_add_cl.destroy()
+        except Exception as e:
+            print(e)
+            showerror('Ошибка', e)
 
 
 
 # --Main Window--
 
 # Clients
-btn = ttk.Button(master=f_clients, text='Добавить', command=add_client)
+btn = ttk.Button(master=f_clients, text='Добавить', command=new_client_window)
 btn.pack(anchor='nw')
 
 columns = ('id', 'master', 'name', 'phone_number', 'service', 'price')
