@@ -39,33 +39,37 @@ def add_client():
 
     w_add_cl = Toplevel(root)
     w_add_cl.title('Новый клиент')
-    w_add_cl.geometry('250x200')
+    #w_add_cl.geometry('300x200')
 
     l_name = ttk.Label(w_add_cl, text='ФИО')
-    l_name.grid(row=0, column=0)
+    l_name.grid(row=0, column=0, pady=4, padx=2)
     e_name = ttk.Entry(w_add_cl)
-    e_name.grid(row=0, column=1)
+    e_name.grid(row=0, column=1, pady=4, padx=2, sticky='ew')
 
     l_phone = ttk.Label(w_add_cl, text='Телефон')
-    l_phone.grid(row=1, column=0)
+    l_phone.grid(row=1, column=0, pady=4, padx=2)
     e_phone = ttk.Entry(w_add_cl)
-    e_phone.grid(row=1, column=1)
+    e_phone.grid(row=1, column=1, pady=4, padx=2, sticky='ew')
 
     l_master = ttk.Label(w_add_cl, text='Мастер')
-    l_master.grid(row=2, column=0)
+    l_master.grid(row=2, column=0, pady=4, padx=2)
     cb_master = ttk.Combobox(w_add_cl, values=mst_name_list)
-    cb_master.grid(row=2, column=1)
+    cb_master.grid(row=2, column=1, pady=4, padx=2, sticky='ew')
 
     l_service = ttk.Label(w_add_cl, text='Услуга')
-    l_service.grid(row=3, column=0)
+    l_service.grid(row=3, column=0, pady=4, padx=2)
     cb_service = ttk.Combobox(w_add_cl, values=srv_name_list)
-    cb_service.grid(row=3, column=1)
+    cb_service.grid(row=3, column=1, pady=4, padx=2, sticky='ew')
 
-    b_exit = ttk.Button(w_add_cl, text='Закрыть')
-    b_exit.grid(row=4, column=0)
+    button_frame = ttk.Frame(w_add_cl)
 
-    b_apply = ttk.Button(w_add_cl, text='Добавить')
-    b_apply.grid(row=4, column=1)
+    b_exit = ttk.Button(button_frame, text='Закрыть')
+    b_exit.grid(row=0, column=0, pady=4, padx=6)
+
+    b_apply = ttk.Button(button_frame, text='Добавить')
+    b_apply.grid(row=0, column=1, pady=4, padx=6)
+
+    button_frame.grid(row=4, column=0, columnspan=2)
     
 
 
