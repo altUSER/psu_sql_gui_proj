@@ -1,7 +1,9 @@
 import sqlite3
+import os
 
-DB_PATH='./database/db2.sqlite'
+DB_PATH=os.environ['DB_PATH'] #'./database/db2.sqlite'
 
+print(DB_PATH)
 conn = sqlite3.connect(DB_PATH,
                        timeout=5.0,
                        detect_types=0,
