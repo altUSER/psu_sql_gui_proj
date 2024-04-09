@@ -37,6 +37,16 @@ class Client():
             srv_arr.append(instance.getById(srv_id[0]))
         
         return srv_arr
+    
+    def getGroupByService(self):
+        result = cursor.execute(f'SELECT id_service, COUNT(*) FROM clients GROUP BY id_service;').fetchall()
+
+        result_arr = []
+
+        for record in result:
+            result_arr.append((Service().getById(record[0]), record[1]))
+        
+        return result_arr
 
     
     def write(self):

@@ -25,6 +25,20 @@ class Master():
             return None
     
     @classmethod
+    def getByActivity(cls, kind_of_activity):
+        mstr_arr = []
+
+        result = cursor.execute(f"SELECT id FROM masters WHERE (kind_of_activity='{kind_of_activity}');").fetchall()
+
+        if not result == None:
+            for mstr_id in result:
+                instance = cls()
+                mstr_arr.append(instance.getById(mstr_id[0]))
+            return mstr_arr
+        else:
+            return None
+    
+    @classmethod
     def getAll(cls):
         mstr_arr = []
 

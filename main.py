@@ -187,6 +187,28 @@ def main(DB_PATH):
             except Exception as e:
                 showerror('Ошибка', e)
         
+    def cl_report():
+        w_cl_report = Toplevel(root)
+        w_cl_report.title('Отчет по пользователям')
+
+        columns = ('service', 'cnt')
+
+        t_cl = ttk.Treeview(master=w_cl_report, columns=columns, show='headings')
+        t_cl.pack(fill=BOTH, expand=1)
+        
+        t_cl.heading('service', text='Услуга')
+        t_cl.heading('cnt', text='Кол-во клиентов')
+
+        clients = []
+        for cl in notorm.Client().getGroupByService():
+            clients.append((
+                    cl[0].service_name,
+                    cl[1]))
+        
+        for cl in clients:
+                t_cl.insert('', END, values=cl)
+
+
 
     # Add Master
     def new_master_window():
@@ -281,6 +303,9 @@ def main(DB_PATH):
         b_delete = ttk.Button(button_frame, text='Удалить', command=lambda: delete_master())
         b_delete.grid(row=0, column=3, pady=4, padx=6)
 
+        b_show_clients = ttk.Button(button_frame, text='Список клиентов', command=lambda: show_clients())
+        b_show_clients.grid(row=1, column=0, columnspan=3, pady=4, padx=6)
+
         button_frame.grid(row=4, column=0, columnspan=2)
 
         def update_master():
@@ -306,7 +331,48 @@ def main(DB_PATH):
                 w_upd_mst.destroy()
             except Exception as e:
                 showerror('Ошибка', e)
+        
+        def show_clients():
+            w_mst_cl = Toplevel(root)
+            w_mst_cl.title(f'Список клиентов {master.name}')
 
+            clients_names = []
+            for cl in master.getClients():
+                clients_names.append(cl.name)
+
+            clients_val = Variable(value=clients_names)
+            lb_mst_cl = Listbox(master=w_mst_cl, listvariable=clients_val)
+            lb_mst_cl.pack(anchor=NW, fill=X, padx=5, pady=5)
+
+    def mst_find_by_act():
+        w_mst_find = Toplevel(root)
+        w_mst_find.title(f'Поиск мастера по активности')
+
+        lbl_find = Label(master=w_mst_find, text='Введите деятельность:')
+        lbl_find.pack()
+
+        sv_find = StringVar()
+        sv_find.trace_add("write", lambda name, index, mode, sv=sv_find: find_callback(sv))
+        l_find = ttk.Entry(master=w_mst_find, textvariable=sv_find)
+        l_find.pack(pady=2)
+
+        lb_find = Listbox(master=w_mst_find)
+        lb_find.pack(pady=6)
+
+        def find_callback(sv):
+            find_result = notorm.Master().getByActivity(sv.get())
+            
+            masters_names = []
+            if find_result:
+                for master in find_result:
+                    masters_names.append(master.name)
+                
+                masters_var = Variable(value=masters_names)
+                lb_find.config(listvariable=masters_var)
+            else:
+                masters_var = Variable(value=masters_names)
+                lb_find.config(listvariable=masters_var)
+            
 
     # Add Service
     def new_service_window():
@@ -433,6 +499,9 @@ def main(DB_PATH):
     b_cl_update = ttk.Button(master=f_cl_frame, text='Обновить', command=cl_item_update)
     b_cl_update.grid(row=0, column=1, sticky='w')
 
+    b_cl_report = ttk.Button(master=f_cl_frame, text='Отчет', command=cl_report)
+    b_cl_report.grid(row=0, column=3, sticky='w')
+
     columns = ('id', 'master', 'name', 'phone_number', 'service', 'price')
 
     t_cl = ttk.Treeview(master=f_clients, columns=columns, show='headings')
@@ -483,6 +552,9 @@ def main(DB_PATH):
 
     b_mst_update = ttk.Button(master=f_mst_frame, text='Обновить', command=mst_item_update)
     b_mst_update.grid(row=0, column=1, sticky='w')
+
+    b_mst_find_by_act = ttk.Button(master=f_mst_frame, text='Поиск по активности', command=mst_find_by_act)
+    b_mst_find_by_act.grid(row=0, column=2, sticky='w')
         
 
     columns = ('id', 'kind_of_activity', 'name', 'address', 'phone_number')
